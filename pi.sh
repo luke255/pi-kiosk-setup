@@ -171,6 +171,9 @@ Unattended-Upgrade::OnlyOnACPower "true";
 EOF
 run "Configure unattended upgrades" "sudo cp \$tempConf /etc/apt/apt.conf.d/50unattended-upgrades"
 
+# clear chromium profile to avoid error when changing hostname
+run "Remove old Chromium profiles" "rm -rf /home/${username}/.config/chromium/Singleton*"
+
 # build and install the startup scripts
 run "Create startup script" "mkdir -p /home/${username}/.config/lxsession/LXDE-pi && echo -e \"@/home/${username}/${project}.sh\" > /home/${username}/.config/lxsession/LXDE-pi/autostart; rm -f /home/${username}/*.sh"
 cat >/home/${username}/${project}.sh <<EOF
