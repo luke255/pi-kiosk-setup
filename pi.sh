@@ -98,6 +98,7 @@ echo ""
 #############################
 
 # authenticate
+pw="default"
 run "Aquire authentication" "echo raspberry | sudo -S -v || pw=""; sudo -v" # authenticate with default password, fallback to a prompt
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null & # maintain authentication
 username=$USER
@@ -107,7 +108,10 @@ prompt "project name" "Maximum of 16 alphanumeric characters/underscores" "proje
 prompt "kiosk url" "Valid, active URL" "kurl" "curl --head \"\$kurl\""
 
 # secure device
-run "Setting new password" "sudo passwd ${username}" "SHOW"
+if [[ $pw = "default" ]]
+then
+    run "Setting new password" "sudo passwd ${username}" "SHOW"
+fi
 run "Enable passwordless sudo" "sudo rm -f '/etc/sudoers.d/*' && echo \"${username} ALL=(ALL:ALL) NOPASSWD:ALL\" | sudo tee -a '/etc/sudoers.d/$project'"
 echo -e "${blue}Run the following command on your host device:${reset}\n\n${bold}ssh-copy-id ${username}@$(hostname -I)${reset}\n"
 read -s -p "Press enter to continue."
