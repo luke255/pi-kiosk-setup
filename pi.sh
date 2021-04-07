@@ -131,7 +131,7 @@ run "Update packages" "sudo apt-get update && sudo apt-get upgrade -y"
 run "Install packages" "sudo apt-get install chromium-browser unattended-upgrades unclutter"
 
 # clear existing scripts
-run "Clear existing scripts" "rm -f /home/${username}/*.sh;rm -f /home/${username}/*.js"
+run "Clear existing scripts" "rm -f /home/${username}/*.sh;rm -f /home/${username}/*.js;echo 1 > /home/pi/display_power.conf"
 
 # configure remote control
 if [[ $enableRemote = 1 ]]
@@ -205,7 +205,7 @@ xset s noblank
 
 # blank the screen for 20 seconds while the desktop ui and Chromium loads
 /usr/bin/vcgencmd display_power 0
-(sleep 20; /usr/bin/vcgencmd display_power 1) &
+(sleep 20; /usr/bin/vcgencmd display_power \$(cat /home/${username}/display_power.conf)) &
 
 # Hide cursor
 unclutter -idle 0.5 -root &
