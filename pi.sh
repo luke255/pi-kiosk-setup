@@ -185,10 +185,7 @@ Unattended-Upgrade::Origins-Pattern {
 Unattended-Upgrade::AutoFixInterruptedDpkg "true";
 Unattended-Upgrade::MinimalSteps "true";
 Unattended-Upgrade::Remove-Unused-Dependencies "true";
-Unattended-Upgrade::Automatic-Reboot "true";
-Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
-Unattended-Upgrade::Automatic-Reboot-Time "02:00";
-Unattended-Upgrade::OnlyOnACPower "true";
+Unattended-Upgrade::Automatic-Reboot "false";
 EOF
 run "Configure unattended upgrades" "sudo cp \$tempConf /etc/apt/apt.conf.d/50unattended-upgrades"
 
