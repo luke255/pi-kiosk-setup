@@ -110,16 +110,6 @@ run "Clear existing scripts" "rm -f /home/${username}/*.sh;rm -f /home/${usernam
 prompt "project name" "Maximum of 16 alphanumeric characters/underscores" "project" "grep -E \"^\\w+\$\" <<< \"\$project\""
 prompt "kiosk url" "Valid, active URL" "kurl" "curl --head \"\$kurl\""
 
-# secure device
-if [[ $pw = "default" ]]
-then
-    run "Setting new password" "sudo passwd ${username}" "SHOW"
-fi
-run "Enable passwordless sudo" "sudo rm -f '/etc/sudoers.d/*' && echo \"${username} ALL=(ALL:ALL) NOPASSWD:ALL\" | sudo tee -a '/etc/sudoers.d/$project'"
-echo -e "${blue}Run the following command on your host device:${reset}\n\n${bold}ssh-copy-id ${username}@$(hostname -I)${reset}\n"
-read -s -p "Press enter to continue."
-echo -e "\n"
-
 # not for everyone
 enableRemote=1
 read -p "Enable remote control? [Y/n]" -n 1 -r
@@ -129,9 +119,14 @@ then
     enableRemote=0
 fi
 
-# prompt user to fuck off for a bit
-echo -e "${blue}All required information gathered. Remaining steps are automatic. This may take a little while.${reset}\n"
-read -s -p "Press enter to finalise."
+# secure device and prompt user to fuck off for a bit
+if [[ $pw = "default" ]]
+then
+    run "Setting new password" "sudo passwd ${username}" "SHOW"
+fi
+run "Enable passwordless sudo" "sudo rm -f '/etc/sudoers.d/*' && echo \"${username} ALL=(ALL:ALL) NOPASSWD:ALL\" | sudo tee -a '/etc/sudoers.d/$project'"
+echo -e "${blue}All required information gathered. Remaining steps are automatic.\n\nRun the following command on your host device to copy your ssh key:${reset}\n\n${bold}ssh-copy-id ${username}@$(hostname -I)${reset}\n"
+read -s -p "Press enter to finalise. This may take a little while."
 echo -e "\n"
 
 # apt update, upgrade and install
