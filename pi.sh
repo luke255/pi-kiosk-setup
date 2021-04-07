@@ -154,6 +154,8 @@ run "Set boot parameters" "sudo cp \$tempConf /boot/config.txt"
 run "Wait for network on boot" "sudo raspi-config nonint do_boot_wait 1"
 run "Disable splash screen" "sudo rm -f /usr/share/plymouth/themes/pix/splash.png"
 run "Set hostname" "sudo raspi-config nonint do_hostname ${project}"
+run "Disable Raspberry Pi welcome app" "sudo rm -f /etc/xdg/autostart/piwiz.desktop" 
+run "Disable default password prompt" "sudo rm -f /etc/xdg/autostart/pprompt.desktop"
 
 # auto updates, for better or worse
 tempConf=$(mktemp)
