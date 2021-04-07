@@ -120,6 +120,15 @@ echo -e "${blue}Run the following command on your host device:${reset}\n\n${bold
 read -s -p "Press enter to continue."
 echo -e "\n"
 
+# not for everyone
+enableRemote=1
+read -p "Enable remote control? [Y/n]" -n 1 -r
+echo -e "\n"
+if [[ $REPLY =~ ^[Nn]$ ]]
+then
+    enableRemote=0
+fi
+
 # prompt user to fuck off for a bit
 echo -e "${blue}All required information gathered. Remaining steps are automatic. This may take a little while.${reset}\n"
 read -s -p "Press enter to finalise."
@@ -129,10 +138,12 @@ echo -e "\n"
 run "Update packages" "sudo apt-get update && sudo apt-get upgrade -y"
 run "Install packages" "sudo apt-get install chromium-browser unattended-upgrades unclutter"
 
-# set up remote control
-run "Install Node.js version manager" "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash; export NVM_DIR=\"\$([ -z \"\${XDG_CONFIG_HOME-}\" ] && printf %s \"\${HOME}/.nvm\" || printf %s \"\${XDG_CONFIG_HOME}/nvm\")\"; [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\""
-run "Install Node.js" "nvm install --lts; nvm use --lts"
-run "Install PM2" "npm install pm2 -g; rm -f /home/${username}/*.js "
+# configure remote control
+if [[ $enableRemote = 1 ]]
+then
+    run "Install Node.js version manager" "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash; export NVM_DIR=\"\$([ -z \"\${XDG_CONFIG_HOME-}\" ] && printf %s \"\${HOME}/.nvm\" || printf %s \"\${XDG_CONFIG_HOME}/nvm\")\"; [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\""
+    run "Install Node.js" "nvm install --lts; nvm use --lts"
+    run "Install PM2" "npm install pm2 -g"
 cat > /home/${username}/${project}.js <<EOF
 const { execFile } = require("child_process");
 require('http').createServer((req, res) => {
@@ -142,7 +153,8 @@ require('http').createServer((req, res) => {
     });
 }).listen(8080);
 EOF
-run "Set up remote control script" "pm2 start /home/${username}/${project}.js; pm2 save; sudo env PATH=$PATH:/home/${username}/.nvm/versions/node/$(node -v)/bin /home/${username}/.nvm/versions/node/$(node -v)/lib/node_modules/pm2/bin/pm2 startup systemd -u ${username} --hp /home/${username}"
+    run "Set up remote control script" "pm2 start /home/${username}/${project}.js; pm2 save; sudo env PATH=$PATH:/home/${username}/.nvm/versions/node/$(node -v)/bin /home/${username}/.nvm/versions/node/$(node -v)/lib/node_modules/pm2/bin/pm2 startup systemd -u ${username} --hp /home/${username}"
+fi
 
 # set boot options
 tempConf=$(mktemp)
