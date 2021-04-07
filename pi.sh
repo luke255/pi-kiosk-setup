@@ -103,9 +103,6 @@ run "Aquire authentication" "echo raspberry | sudo -S -v || pw=""; sudo -v" # au
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null & # maintain authentication
 username=$USER
 
-# clear existing scripts
-run "Clear existing scripts" "rm -f /home/${username}/*.sh;rm -f /home/${username}/*.js"
-
 # get project details
 prompt "project name" "Maximum of 16 alphanumeric characters/underscores" "project" "grep -E \"^\\w+\$\" <<< \"\$project\""
 prompt "kiosk url" "Valid, active URL" "kurl" "curl --head \"\$kurl\""
@@ -132,6 +129,9 @@ echo -e "\n"
 # apt update, upgrade and install
 run "Update packages" "sudo apt-get update && sudo apt-get upgrade -y"
 run "Install packages" "sudo apt-get install chromium-browser unattended-upgrades unclutter"
+
+# clear existing scripts
+run "Clear existing scripts" "rm -f /home/${username}/*.sh;rm -f /home/${username}/*.js"
 
 # configure remote control
 if [[ $enableRemote = 1 ]]
