@@ -123,7 +123,7 @@ echo -e "\n"
 # not for everyone
 enableRemote=1
 read -p "Enable remote control? [Y/n]" -n 1 -r
-echo -e "\n"
+echo ""
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
     enableRemote=0
