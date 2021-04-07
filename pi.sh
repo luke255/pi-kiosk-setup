@@ -192,6 +192,16 @@ Unattended-Upgrade::OnlyOnACPower "true";
 EOF
 run "Configure unattended upgrades" "sudo cp \$tempConf /etc/apt/apt.conf.d/50unattended-upgrades"
 
+# auto reboot at 03:30 every night, because i've given up trying to make Chrome run long term
+run "Set up auto reboot" "echo \"30 3 * * * /home/${username}/${project}_reboot.sh\" | crontab"
+cat >/home/${username}/${project}_reboot.sh <<EOF
+#!/bin/bash
+
+# make it so
+sudo reboot
+EOF
+sudo chmod +x /home/${username}/${project}_reboot.sh
+
 # clear chromium profile to avoid error when changing hostname
 run "Remove old Chromium profiles" "rm -rf /home/${username}/.config/chromium/Singleton*"
 
